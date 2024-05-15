@@ -10,7 +10,6 @@ const otpGenrator = () => {
 const otpSender = async (email) => {
     try {
         const otp = otpGenrator();
-
         let message = `Your OTP is ${otp}`;
 
         const transporter = nodemailer.createTransport({
@@ -35,33 +34,31 @@ const otpSender = async (email) => {
             text: message
         }
 
-        transporter.sendMail(mailOptions, async (err, info) => {
-            if (err) {
-                console.log(err)
-                return 0
-            } else {
-                const otpData = new OTP({
-                    email: email,
-                    otp: otp
-                })
-                await otpData.save();
-
-                setTimeout(async () => {
-                    await OTP.deleteOne({ email: email })
-                    // console.log("OTP Expired");
-                }, 1000*60)
-                return {
-                    success: true,
+        const otpSender = new Promise((resolve, reject) => {
+            transporter.sendMail(mailOptions, async (err, info) => {
+                if (err) {
+                    return reject(err)
                 }
-            }
+                if (info) {
+                    const otpData = new OTP({
+                        email: email,
+                        otp: otp
+                    })
+                    await otpData.save();
+                    setTimeout(async () => {
+                        await OTP.deleteOne({ email: email })
+                    }, 1000 * 60)
+                    return resolve({
+                        success: true
+                    })
+                }
+            })
         })
-        return {
-            success: true
-        }
+        return await otpSender;
     } catch (error) {
         return {
             success: false,
-            message: error.message||"Error in sending OTP"
+            message: error.message || "Error in sending OTP"
         }
     }
 }

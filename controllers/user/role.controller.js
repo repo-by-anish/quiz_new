@@ -14,14 +14,14 @@ class RoleController {
 
     async addRole(req, res) {
         try {
-            const {name, description, permissions} = req.body;
-            if(!name || !description || !permissions.length) {
+            const { name, description, permissions } = req.body;
+            if (!name || !description || !permissions.length) {
                 return {
-                    data: {message: "Missing fields", success: false},
+                    data: { message: "Missing fields", success: false },
                     status: 400
                 }
             }
-            const role = {name, description, permissions};
+            const role = { name, description, permissions };
             const result = await roleRepo.add(role);
             res.status(result.status).json(result.data);
         } catch (error) {
@@ -31,3 +31,4 @@ class RoleController {
 }
 
 export default RoleController
+

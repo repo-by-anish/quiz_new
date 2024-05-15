@@ -27,7 +27,7 @@ class AuthRepo {
                 }
             }
             const otpRes=await otpSender(user.email);
-            if (otpRes) {
+            if (otpRes.success) {
                 return {
                     data: {
                         message: "OTP sent successfully",
@@ -111,8 +111,8 @@ class AuthRepo {
                 }
             }
 
-            const accessToken = jwt.sign({ user }, process.env.ACCESS_SECRET, { expiresIn: "30s" });
-            const refreshToken = jwt.sign({ user }, process.env.REFRESH_SECRET, { expiresIn: "1m" });
+            const accessToken = jwt.sign({ user }, process.env.ACCESS_SECRET, { expiresIn: "15m" });
+            const refreshToken = jwt.sign({ user }, process.env.REFRESH_SECRET, { expiresIn: "30m" });
             await OTP.deleteOne({ email });
             return {
                 data: {
